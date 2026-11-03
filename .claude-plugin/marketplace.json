@@ -1,0 +1,17 @@
+{
+  "name": "applink",
+  "owner": {
+    "name": "Applink",
+    "url": "https://tryapplink.com"
+  },
+  "metadata": {
+    "description": "Applink's plugins for Claude: build the internal apps Applink hosts."
+  },
+  "plugins": [
+    {
+      "name": "applink",
+      "source": "./claude",
+      "description": "Build and publish the internal apps Applink hosts, with your organization’s integrations and your own access."
+    }
+  ]
+}

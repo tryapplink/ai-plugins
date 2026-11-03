@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "applink": {
+      "type": "http",
+      "url": "https://api.tryapplink.com/mcp"
+    }
+  }
+}
