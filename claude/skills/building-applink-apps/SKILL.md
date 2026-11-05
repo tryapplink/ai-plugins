@@ -123,6 +123,17 @@ A Google Analytics integration is listed under `google_analytics` by `list_integ
 - **From the app**, Google's paths go under `/proxy/<integration>/data/…` and `/proxy/<integration>/admin/…`, with the app's access per property (a draft's: its owner's): `fetch("/proxy/analytics/data/v1beta/properties/562464192:runReport", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(report) })`. Show `X-Proxy-Error` refusals' messages; on a 429, wait for `Retry-After`.
 - An approved app needs access to the integration's properties: `give_app_access` with `properties` (Google's IDs) when the person manages integrations; otherwise a manager gives it in Applink.
 
+## Pipedrive
+
+A Pipedrive integration is an HTTP API like any other, made from the Pipedrive preset: its endpoints are Pipedrive's whole API, v1 and v2, under one base URL, `https://api.pipedrive.com`. Every request acts as the one Pipedrive user whose token it holds, and reaches what that user can see.
+
+- **Prefer `/api/v2`.** Where both versions have an endpoint, v1's is named "(v1)" and its description names v2's. v2 costs less and is what Pipedrive develops. Only v1 has users (`/v1/users/me`), notes, leads, files, filters and webhooks.
+- **Read `get_endpoint` first.** Its description says what the request costs of the company's daily API tokens ("Costs 10 of Pipedrive's API tokens.") and, for some v2 endpoints, adds notes Pipedrive wrote for tools like you.
+- **Custom fields** come keyed by 40-character hashes: under `custom_fields` in v2, at the top level in v1. Read `GET /api/v2/dealFields` once (or `personFields`, `organizationFields`, `productFields`, `activityFields`) and show each `field_code`'s `field_name`. Option fields hold IDs; `include_option_labels=true` adds their labels.
+- **Pages.** Answers are `{ success, data, additional_data }`. v2 lists take `limit` (at most 500) and `cursor`, and answer `additional_data.next_cursor`, null on the last page. v1 lists take `start` and `limit`, and answer `additional_data.pagination.next_start` while `more_items_in_collection` is true.
+- **Limits are the company's.** Requests spend one daily budget shared by everyone and every integration in the company, and the token allows 20 to 120 requests per 2 seconds by plan (10 searches). Ask for what the page shows; don't poll. A 429 without `X-Proxy-Error` is Pipedrive's own: wait until its `x-ratelimit-reset` header says.
+- **The token is Applink's.** Never put `api_token` in a query (Applink refuses it), and never ask people for their Pipedrive token.
+
 ## Writing the app
 
 - **Render data as text.** Use `textContent`, `createElement`, or a framework's default escaping. Never `innerHTML` with API data: a string from an API that runs as HTML would run with the person's access.
